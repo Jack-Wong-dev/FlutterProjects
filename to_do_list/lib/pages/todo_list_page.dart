@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:to_do_list/models/task.dart';
 
 class TodoListPage extends StatelessWidget {
   final TextEditingController _controller = TextEditingController();
@@ -17,11 +18,16 @@ class TodoListPage extends StatelessWidget {
       itemCount: snapshot.docs.length,
       itemBuilder: (context, index) {
         final doc = snapshot.docs[index];
+        final task = Task.fromSnapShot(doc);
         final map = doc.data();
-        return ListTile(
-          title: Text(map["title"]),
-        );
+        return _buildListItem(task);
       },
+    );
+  }
+
+  Widget _buildListItem(Task task) {
+    return ListTile(
+      title: Text(task.title),
     );
   }
 
