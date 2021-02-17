@@ -13,13 +13,19 @@ class TodoListPage extends StatelessWidget {
     _controller.text = "";
   }
 
+  void _deleteTask(Task task) async {
+    await FirebaseFirestore.instance
+        .collection("todos")
+        .doc(task.taskId)
+        .delete();
+  }
+
   Widget _buildList(QuerySnapshot snapshot) {
     return ListView.builder(
       itemCount: snapshot.docs.length,
       itemBuilder: (context, index) {
         final doc = snapshot.docs[index];
         final task = Task.fromSnapShot(doc);
-        final map = doc.data();
         return _buildListItem(task);
       },
     );
@@ -27,13 +33,21 @@ class TodoListPage extends StatelessWidget {
 
   Widget _buildListItem(Task task) {
     return ListTile(
-      title: Text(task.title),
+      title: Dismissible(
+          key: Key(task.taskId),
+          onDismissed: (direction) {
+            _deleteTask(task);
+          },
+          background: Container(
+            color: Colors.red,
+          ),
+          child: Text(task.title)),
     );
   }
 
   Widget _buildBody(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
           Row(
